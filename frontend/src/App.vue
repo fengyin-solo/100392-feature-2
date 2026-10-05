@@ -11,7 +11,16 @@
     <main class="app-main">
       <header class="app-head">
         <span class="head-desc">面向地质灾害隐患点形变裂缝观测、雨量预警、避险搬迁安置与治理工程验收全流程的地质灾害防治数字化管理平台。</span>
-        <span class="head-user">当前值班：{{ store.operator }} · {{ store.shiftLabel }}</span>
+        <span class="head-user">
+          当前值班：{{ store.operator }} · {{ store.shiftLabel }}
+          <label class="scope-picker">
+            辖区
+            <select :value="singleTownship" @change="onScopeChange">
+              <option value="__all__">全县联动（可写全部乡镇）</option>
+              <option v-for="township in ALL_TOWNSHIPS" :key="township" :value="township">{{ township }}</option>
+            </select>
+          </label>
+        </span>
       </header>
       <RouterView />
     </main>
@@ -19,9 +28,21 @@
 </template>
 
 <script setup lang="ts">
-import { useSessionStore } from '@/stores/session'
+import { computed } from 'vue'
+
+import { ALL_TOWNSHIPS, useSessionStore } from '@/stores/session'
 
 const store = useSessionStore()
+
+// 选择器只做单乡镇/全县联动两档；多选辖区是后端 RBAC 的事，纯前端演示态不展开。
+const singleTownship = computed(() =>
+  store.townships.length === 1 ? store.townships[0] : '__all__',
+)
+
+function onScopeChange(event: Event) {
+  const value = (event.target as HTMLSelectElement).value
+  store.setTownships(value === '__all__' ? [...ALL_TOWNSHIPS] : [value])
+}
 
 const navItems = [{ label: "运营概览", path: "/" }, { label: "隐患点台账", path: "/hazard" }, { label: "形变观测", path: "/deformation" }, { label: "裂缝监测", path: "/crack" }, { label: "倾斜监测", path: "/tilt" }, { label: "雨量监测", path: "/rain_gauge" }, { label: "预警阈值", path: "/threshold" }, { label: "预警发布", path: "/alarm" }, { label: "避险搬迁", path: "/evacuation" }, { label: "巡查排查", path: "/patrol" }, { label: "治理工程", path: "/engineering" }, { label: "工程验收", path: "/acceptance" }, { label: "整改跟踪", path: "/rectification" }, { label: "应急演练", path: "/drill" }, { label: "监测设备", path: "/device" }, { label: "灾情速报", path: "/report" }, { label: "防灾宣传", path: "/propaganda" }, { label: "承建单位", path: "/contract" }, { label: "群测群防培训", path: "/training" }]
 </script>

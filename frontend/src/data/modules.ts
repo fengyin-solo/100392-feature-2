@@ -157,6 +157,17 @@ export const MODULES: ModuleMeta[] = [
     metrics: ["设备总数", "正常运行数", "待维修数"],
   },
   {
+    key: "device_check",
+    name: "安装核查单",
+    entity: "安装核查单",
+    desc: "隐患点监测确认后在监测设备台账侧同步生成的安装核查单，登记核查单编号、隐患点编号、建议设备类型与核查状态。",
+    fields: ["核查单编号", "隐患点编号", "隐患点名称", "所在乡镇", "建议设备类型", "安装点位", "核查状态", "生成时间", "确认人"],
+    statuses: ["待核查", "核查通过", "核查不通过"],
+    actions: [],
+    actionTargets: {},
+    metrics: ["待核查数", "本周生成数"],
+  },
+  {
     key: "report",
     name: "灾情速报",
     entity: "灾情速报",

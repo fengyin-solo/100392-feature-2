@@ -1,6 +1,14 @@
 import { MODULE_BY_KEY } from '@/data/modules'
 import { allRows, listRows, resetRows, saveRows } from '@/data/local-store'
-import type { ActionResult, EntryRow, ModuleMeta, OverviewResult, PageResult } from '@/data/types'
+import { assertWithinScope } from '@/api/hazard-domain'
+import type {
+  ActionResult,
+  EntryRow,
+  ModuleMeta,
+  OperatorContext,
+  OverviewResult,
+  PageResult,
+} from '@/data/types'
 
 // 会写进数据的「往回走」动作：命中就把这条记录标成异常态，看板上能一眼看出来。
 const NEGATIVE_ACTIONS = ['撤销', '作废', '拒绝', '驳回', '停用', '忽略', '下线', '回滚']
@@ -28,7 +36,12 @@ export function listEntries(key: string, filters: Record<string, string> = {}): 
   return { items: matched, total: matched.length, page: 1, size: matched.length }
 }
 
-export function runAction(key: string, id: number, action: string): ActionResult {
+export function runAction(
+  key: string,
+  id: number,
+  action: string,
+  operator?: OperatorContext,
+): ActionResult {
   const meta = moduleMeta(key)
   const target = meta.actionTargets[action]
   if (!target) {
@@ -38,6 +51,14 @@ export function runAction(key: string, id: number, action: string): ActionResult
   const index = rows.findIndex((row) => Number(row.id) === id)
   if (index < 0) {
     return { ok: false, message: `没有找到编号为 ${id} 的${meta.entity}` }
+  }
+  // 跨区域管控：写操作先过辖区，不属于本值班人辖区的数据一律不许动。
+  if (operator) {
+    try {
+      assertWithinScope(key, rows[index], operator)
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : '辖区校验未通过' }
+    }
   }
   const current = String(rows[index].status)
   if (current === target) {
