@@ -35,3 +35,44 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .error-text { color: #b42318; }
 .status-legend { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 10px; font-size: 12px; color: var(--muted); }
 .legend-item { background: #eef2f7; border-radius: 999px; padding: 2px 10px; }
+.ok-text { color: #067647; }
+
+/* 值班区域选择 */
+.region-select { margin-left: 4px; border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; font-size: 12px; }
+
+/* 危险度分区图 */
+.zoning { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; }
+.zoning-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.zoning-head h3 { margin: 0; font-size: 15px; }
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+.breadcrumb .link:disabled { color: #1f2937; cursor: default; font-weight: 600; }
+.zoning-note { color: var(--muted); font-size: 12px; margin: 8px 0 10px; }
+.zoning-matrix th, .zoning-matrix td { text-align: center; }
+.zoning-td { min-width: 132px; }
+.zoning-cell { display: flex; flex-direction: column; gap: 2px; width: 100%; border: 1px solid transparent; border-radius: 6px; padding: 6px 8px; cursor: pointer; font-size: 12px; line-height: 1.5; }
+.zoning-cell:hover { filter: brightness(0.95); }
+.cell-nums { font-weight: 600; }
+.cell-pop { font-size: 12px; }
+.cell-flag { display: inline-block; align-self: center; background: #fff; border: 1px solid #d0a106; color: #8a6100; border-radius: 999px; padding: 0 8px; font-size: 11px; }
+.cell-empty { color: var(--muted); }
+.zoning-total, .zoning-total-row td { font-size: 12px; color: var(--muted); background: #f8fafc; }
+.risk-0 { background: #fff; }
+.risk-1 { background: #e7f6ec; color: #067647; }
+.risk-2 { background: #fef4d6; color: #8a6100; }
+.risk-3 { background: #fde3cf; color: #b54708; }
+.risk-4 { background: #fbd9d3; color: #b42318; }
+.risk-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; font-size: 12px; color: var(--muted); }
+.legend-note { font-size: 12px; }
+
+/* 钻取详情 */
+.tag { border-radius: 999px; padding: 1px 8px; font-size: 12px; }
+.tag.ok { background: #e7f6ec; color: #067647; }
+.tag.warn { background: #fef4d6; color: #8a6100; }
+.detail-grid { display: grid; grid-template-columns: minmax(260px, 1fr) 2fr; gap: 14px; }
+.detail-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin: 0; }
+.detail-card h4 { margin: 6px 0; font-size: 13px; }
+.detail-card dt { float: left; clear: left; width: 96px; color: var(--muted); font-size: 12px; padding: 3px 0; }
+.detail-card dd { margin: 0 0 0 104px; font-size: 13px; padding: 3px 0; }
+.detail-card .data-table { margin-bottom: 10px; background: #fff; }
+.detail-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+

@@ -24,6 +24,8 @@
       </span>
     </p>
 
+    <ZoningMap ref="zoningRef" @changed="reload" />
+
     <form class="filter-bar" @submit.prevent="reload">
       <label v-for="field in filterFields" :key="field" class="filter-item">
         <span>{{ field }}</span>
@@ -65,6 +67,7 @@
 
     <footer class="page-foot">
       <span>共 {{ total }} 条隐患点台账记录</span>
+      <span v-if="noticeMessage" class="ok-text">{{ noticeMessage }}</span>
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
     </footer>
   </section>
@@ -74,24 +77,28 @@
 import { computed, onMounted, ref } from 'vue'
 
 import {
+  confirmMonitoring,
   downloadEntries,
   listEntries,
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
+import ZoningMap from '@/views/hazard/ZoningMap.vue'
 
 const meta = moduleMeta('hazard')
 const columns = ["隐患点编号", "隐患点名称", "灾害类型", "所在乡镇", "经纬度坐标", "威胁户数", "威胁人口", "隐患状态"]
-const actions = ["纳入监测", "启动治理", "申请核销"]
+const actions = ["监测确认", "启动治理", "申请核销"]
 const statuses = ["在册", "监测中", "已治理", "已核销", "新增"]
 const stats = [{"label": "隐患点总数", "value": 0}, {"label": "监测中数量", "value": 0}, {"label": "已治理数量", "value": 0}]
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
 const errorMessage = ref('')
+const noticeMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
+const zoningRef = ref<InstanceType<typeof ZoningMap> | null>(null)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
@@ -114,12 +121,19 @@ function openCreate() {
 
 function runAction(action: string, row: EntryRow) {
   errorMessage.value = ''
-  const result = applyAction(meta.key, Number(row.id), action)
+  noticeMessage.value = ''
+  // 监测确认是事务动作：带着页面上看到的版本号走，并发确认只留一版
+  const result =
+    action === '监测确认'
+      ? confirmMonitoring(Number(row.id), Number(row.version ?? 1))
+      : applyAction(meta.key, Number(row.id), action)
   if (!result.ok) {
     errorMessage.value = result.message
     return
   }
+  noticeMessage.value = result.message
   reload()
+  zoningRef.value?.refresh()
 }
 
 function reload() {
